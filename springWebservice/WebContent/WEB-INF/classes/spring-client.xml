@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jaxws="http://cxf.apache.org/jaxws"
+	xsi:schemaLocation="
+	    http://www.springframework.org/schema/beans
+	    http://www.springframework.org/schema/beans/spring-beans.xsd
+	    http://cxf.apache.org/jaxws
+	    http://cxf.apache.org/schemas/jaxws.xsd">
+
+	<bean id="client" class="com.cxf.service.IReaderService"
+		factory-bean="clientFactory" factory-method="create" />
+
+	<bean id="clientFactory" class="org.apache.cxf.jaxws.JaxWsProxyFactoryBean">
+		<property name="serviceClass" value="com.cxf.service.IReaderService" />
+		<property name="address"
+			value="http://172.17.2.104:8081/javaee/webservice/readerService2" />
+	 		<property name="outInterceptors">
+	 			<list>
+					<bean class="org.apache.cxf.interceptor.LoggingOutInterceptor" />
+		            <bean class="org.apache.cxf.binding.soap.saaj.SAAJOutInterceptor" />
+		            <bean class="org.apache.cxf.transport.common.gzip.GZIPOutInterceptor"/>
+		            <bean class="org.apache.cxf.ws.security.wss4j.WSS4JOutInterceptor">
+		                <constructor-arg>
+		                    <map>
+		                        <entry key="action" value="UsernameToken" />
+		                        <entry key="passwordType"
+		                            value="PasswordText" />
+		                        <entry key="user" value="cxfClient" />
+		                        <entry key="passwordCallbackRef">
+		                            <ref bean="clientPasswordCallback" />
+		                        </entry>
+		                    </map>
+		                </constructor-arg>
+		            </bean>
+	 			</list>
+		</property>
+		<property name="inInterceptors">
+		<list>
+		 <bean class="org.apache.cxf.transport.common.gzip.GZIPInInterceptor"/>
+		</list>
+		</property>
+	 </bean>
+	 <bean id="clientPasswordCallback" class="com.cxf.client.ClientPasswordCallback"></bean>
+
+
+		<!-- 这个地方的地址一定要注意，正确的
+
+
+        <jaxws:client id="client" serviceClass="com.cxf.servlet.IReaderService"
+        address="http://172.17.2.104:8081/javaee/webservice/readerService2">
+        <jaxws:outInterceptors>
+        <bean class="org.apache.cxf.binding.soap.saaj.SAAJInInterceptor" />
+            <ref bean="wsOutInterceptor"/>
+        </jaxws:outInterceptors>
+    </jaxws:client>
+
+
+    <bean id="clientPasswordCallback" class="com.evermoresw.megp.utilities.ClientPasswordCallback" />
+    <bean id="wsOutInterceptor" class="org.apache.cxf.ws.security.wss4j.WSS4JOutInterceptor">
+        <constructor-arg>
+            <map>
+                <entry key="action" value="UsernameToken" />
+                <entry key="passwordType" value="PasswordText" />
+                <entry key="user" value="admin" />
+                <entry key="passwordCallbackRef">
+                    <ref bean="clientPasswordCallback" />
+                </entry>
+            </map>
+        </constructor-arg>
+    </bean>
+-->
+</beans>
+
